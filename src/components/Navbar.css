@@ -1,0 +1,70 @@
+/* NAVBAR */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  height: var(--nav-height);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--room-border);
+  transition:
+    background-color var(--transition-room),
+    border-color var(--transition-room);
+}
+
+.navbar__inner {
+  height: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-8);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navbar__logo {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 400;
+  letter-spacing: 0.3em;
+  color: var(--room-text);
+  transition: color var(--transition-base);
+}
+
+.navbar__logo:hover {
+  color: var(--room-accent);
+}
+
+.navbar__cart {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--room-text);
+  font-size: var(--text-xs);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  padding: var(--space-2) var(--space-3);
+  transition: color var(--transition-base);
+}
+
+.navbar__cart:hover {
+  color: var(--room-accent);
+}
+
+.navbar__cart-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  background-color: var(--room-accent);
+  color: var(--room-bg);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0;
+  border-radius: 10px;
+}
