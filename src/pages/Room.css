@@ -243,3 +243,30 @@
     left: var(--space-4);
   }
 }
+/* ROOM LOADING — spinning logo */
+.room-loading {
+  position: relative;
+  z-index: 2;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--room-bg);
+}
+
+.room-loading__logo {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 22px rgba(200, 169, 110, 0.5));
+  animation: roomLoadSpin 2.5s linear infinite, roomLoadPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes roomLoadSpin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes roomLoadPulse {
+  0%, 100% { filter: drop-shadow(0 0 16px rgba(200, 169, 110, 0.35)); }
+  50%      { filter: drop-shadow(0 0 30px rgba(200, 169, 110, 0.7)); }
+}

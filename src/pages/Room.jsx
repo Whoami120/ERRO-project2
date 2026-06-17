@@ -44,7 +44,11 @@ function Room() {
   }, [room])
 
   if (loading) {
-    return <div className="room-404"><h1>Entering...</h1></div>
+    return (
+      <div className="room-loading">
+        <img src="/logo.png" alt="" className="room-loading__logo" />
+      </div>
+    )
   }
 
   if (!room) {
@@ -69,7 +73,6 @@ function Room() {
           ← Universe
         </button>
         <div className="room__hero-content">
-          <p className="room__eyebrow">Drop</p>
           <h1 className="room__name">{room.name}</h1>
           <p className="room__tagline">{room.tagline}</p>
           <p className="room__mood">{room.mood}</p>
