@@ -3,6 +3,8 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import mongoose from 'mongoose'
 import roomsRouter from './routes/rooms.js'
+import productsRouter from './routes/products.js'
+import ordersRouter from './routes/orders.js'
 
 dotenv.config()
 
@@ -14,6 +16,8 @@ app.get('/', (req, res) => {
   res.json({ message: 'ERRO API running' })
 })
 app.use('/api/rooms', roomsRouter)
+app.use('/api/products', productsRouter)
+app.use('/api/orders', ordersRouter)
 
 const PORT = process.env.PORT || 5000
 

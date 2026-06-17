@@ -1,8 +1,5 @@
-import { useState } from 'react'
-import {
-  getProducts, getRooms,
-  createProduct, updateProduct, deleteProduct,
-} from '../../data/store.js'
+import { useState, useEffect } from 'react'
+import { productsApi, roomsApi } from '../../api/client.js'
 import './ProductsManager.css'
 
 const SIZE_PRESETS = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'One Size']
@@ -20,14 +17,30 @@ const BLANK_PRODUCT = {
 }
 
 function ProductsManager() {
-  const [products, setProducts] = useState(getProducts())
-  const [rooms] = useState(getRooms())
+  const [products, setProducts] = useState([])
+  const [rooms, setRooms] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    loadAll()
+  }, [])
+
+  function loadAll() {
+    setLoading(true)
+    Promise.all([productsApi.getAll(), roomsApi.getAll()])
+      .then(([productsData, roomsData]) => {
+        setProducts(productsData)
+        setRooms(roomsData)
+      })
+      .catch(err => console.error('Failed to load:', err))
+      .finally(() => setLoading(false))
+  }
   const [draft, setDraft] = useState(null)
   const [isNew, setIsNew] = useState(false)
   const [error, setError] = useState('')
 
   function refresh() {
-    setProducts(getProducts())
+    loadAll()
   }
 
   function roomName(roomId) {
@@ -69,7 +82,7 @@ function ProductsManager() {
       : [...draft.sizes, size])
   }
 
-  function save() {
+  async function save() {
     if (!draft.name.trim()) { setError('Name is required.'); return }
     if (draft.price === '' || isNaN(Number(draft.price))) { setError('Valid price is required.'); return }
     if (draft.sizes.length === 0) { setError('Pick at least one size.'); return }
@@ -82,20 +95,29 @@ function ProductsManager() {
     }
     if (clean.images.length === 0) clean.images = ['']
 
-    if (isNew) {
-      createProduct(clean)
-    } else {
-      updateProduct(draft.id, clean)
+    try {
+      if (isNew) {
+        const id = 'p-' + Date.now().toString().slice(-6)
+        await productsApi.create({ ...clean, id })
+      } else {
+        await productsApi.update(draft.id, clean)
+      }
+      refresh()
+      cancel()
+    } catch (err) {
+      setError(err.message)
     }
-    refresh()
-    cancel()
   }
 
-  function remove(product) {
+  async function remove(product) {
     if (!window.confirm(`Delete "${product.name}"? This cannot be undone.`)) return
-    deleteProduct(product.id)
-    refresh()
-    cancel()
+    try {
+      await productsApi.remove(product.id)
+      refresh()
+      cancel()
+    } catch (err) {
+      setError(err.message)
+    }
   }
 
   // ── EDIT / CREATE FORM ───────────────────────────────────────

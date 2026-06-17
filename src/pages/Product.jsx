@@ -1,14 +1,30 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import { getRoomById, getProductById } from '../data/store.js'
+import { roomsApi, productsApi } from '../api/client.js'
 import { useCart } from '../context/CartContext.jsx'
 import './Product.css'
+
 function Product() {
   const { productId } = useParams()
   const navigate = useNavigate()
-  const product = getProductById(productId)
   const { addItem } = useCart()
-  const room = product?.roomId ? getRoomById(product.roomId) : null
+  const [product, setProduct] = useState(null)
+  const [room, setRoom] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    setLoading(true)
+    productsApi.getOne(productId)
+      .then(async (prod) => {
+        setProduct(prod)
+        if (prod.roomId) {
+          const r = await roomsApi.getOne(prod.roomId).catch(() => null)
+          setRoom(r)
+        }
+      })
+      .catch(() => setProduct(null))
+      .finally(() => setLoading(false))
+  }, [productId])
 
   const [selectedSize, setSelectedSize] = useState(null)
   const [notice, setNotice] = useState('')
@@ -31,6 +47,10 @@ function Product() {
       root.style.setProperty('--room-border', '#2a2a2a')
     }
   }, [room])
+
+  if (loading) {
+    return <div className="product-404"><h1>Loading...</h1></div>
+  }
 
   if (!product) {
     return (

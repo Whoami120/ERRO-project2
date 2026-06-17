@@ -1,13 +1,27 @@
 import { useParams, useNavigate, Link } from 'react-router-dom'
-import { useEffect } from 'react'
-import { getRoomById, getProductsByRoom } from '../data/store.js'
+import { useEffect, useState } from 'react'
+import { roomsApi, productsApi } from '../api/client.js'
 import './Room.css'
 
 function Room() {
   const { roomId } = useParams()
   const navigate = useNavigate()
-  const room = getRoomById(roomId)
-  const roomProducts = getProductsByRoom(roomId)
+  const [room, setRoom] = useState(null)
+  const [roomProducts, setRoomProducts] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    setLoading(true)
+    Promise.all([
+      roomsApi.getOne(roomId).catch(() => null),
+      productsApi.getByRoom(roomId).catch(() => []),
+    ])
+      .then(([roomData, productsData]) => {
+        setRoom(roomData)
+        setRoomProducts(productsData)
+      })
+      .finally(() => setLoading(false))
+  }, [roomId])
 
   // Apply room theme to the whole page
   useEffect(() => {
@@ -28,6 +42,10 @@ function Room() {
       root.style.setProperty('--room-border', '#2a2a2a')
     }
   }, [room])
+
+  if (loading) {
+    return <div className="room-404"><h1>Entering...</h1></div>
+  }
 
   if (!room) {
     return (

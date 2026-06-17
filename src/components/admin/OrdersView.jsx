@@ -1,20 +1,37 @@
-import { useState } from 'react'
-import { getOrders, updateOrderStatus } from '../../data/orders.js'
+import { useState, useEffect } from 'react'
+import { ordersApi } from '../../api/client.js'
 import './OrdersView.css'
 
 const STATUSES = ['pending', 'confirmed', 'delivered', 'cancelled']
 
 function OrdersView() {
-  const [orders, setOrders] = useState(getOrders())
+  const [orders, setOrders] = useState([])
+  const [loading, setLoading] = useState(true)
 
-  function changeStatus(orderId, status) {
-    updateOrderStatus(orderId, status)
-    setOrders(getOrders())
+  useEffect(() => {
+    ordersApi.getAll()
+      .then(setOrders)
+      .catch(err => console.error('Failed to load orders:', err))
+      .finally(() => setLoading(false))
+  }, [])
+
+  async function changeStatus(orderId, status) {
+    try {
+      await ordersApi.updateStatus(orderId, status)
+      const fresh = await ordersApi.getAll()
+      setOrders(fresh)
+    } catch (err) {
+      alert('Failed to update status: ' + err.message)
+    }
   }
 
   function formatDate(iso) {
     const d = new Date(iso)
     return d.toLocaleDateString() + ' · ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  }
+
+  if (loading) {
+    return <div className="orders"><h2 className="orders__title">Orders</h2><p className="orders__empty">Loading...</p></div>
   }
 
   if (orders.length === 0) {

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCart } from '../context/CartContext.jsx'
-import { saveOrder } from '../data/orders.js'
+import { ordersApi } from '../api/client.js'
 import './Checkout.css'
 
 function Checkout() {
@@ -13,6 +13,7 @@ function Checkout() {
   })
   const [errors, setErrors] = useState({})
   const [confirmedOrder, setConfirmedOrder] = useState(null)
+  const [submitting, setSubmitting] = useState(false)
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -30,25 +31,31 @@ function Checkout() {
     return Object.keys(next).length === 0
   }
 
-  function handleConfirm() {
+  async function handleConfirm() {
     if (!validate()) return
 
-    const order = saveOrder({
-      customer: form,
-      items: items.map(i => ({
-        productId: i.product.id,
-        name: i.product.name,
-        size: i.size,
-        qty: i.qty,
-        price: i.product.price,
-      })),
-      total,
-      currency: 'MAD',
-      payment: 'Cash on Delivery',
-    })
+    setSubmitting(true)
+    try {
+      const order = await ordersApi.create({
+        customer: form,
+        items: items.map(i => ({
+          productId: i.product.id,
+          name: i.product.name,
+          size: i.size,
+          qty: i.qty,
+          price: i.product.price,
+        })),
+        total,
+        currency: 'MAD',
+        payment: 'Cash on Delivery',
+      })
 
-    setConfirmedOrder(order)
-    clearCart()
+      setConfirmedOrder(order)
+      clearCart()
+    } catch (err) {
+      alert('Could not place order: ' + err.message)
+      setSubmitting(false)
+    }
   }
 
   // ── CONFIRMATION SCREEN ──────────────────────────────────────
@@ -151,8 +158,8 @@ function Checkout() {
             {errors.address && <span className="field__error">{errors.address}</span>}
           </div>
 
-          <button className="checkout__confirm" onClick={handleConfirm}>
-            Confirm Order — {total} MAD
+          <button className="checkout__confirm" onClick={handleConfirm} disabled={submitting}>
+            {submitting ? 'Placing order...' : `Confirm Order — ${total} MAD`}
           </button>
 
           <p className="checkout__disclaimer">

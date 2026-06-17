@@ -1,7 +1,5 @@
-import { useState } from 'react'
-import {
-  getRooms, createRoom, updateRoom, deleteRoom,
-} from '../../data/store.js'
+import { useState, useEffect } from 'react'
+import { roomsApi } from '../../api/client.js'
 import './RoomsManager.css'
 
 const BLANK_ROOM = {
@@ -28,13 +26,26 @@ function slugify(text) {
 }
 
 function RoomsManager() {
-  const [rooms, setRooms] = useState(getRooms())
+  const [rooms, setRooms] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    loadRooms()
+  }, [])
+
+  function loadRooms() {
+    setLoading(true)
+    roomsApi.getAll()
+      .then(setRooms)
+      .catch(err => console.error('Failed to load rooms:', err))
+      .finally(() => setLoading(false))
+  }
   const [draft, setDraft] = useState(null)   // null = list view
   const [isNew, setIsNew] = useState(false)
   const [error, setError] = useState('')
 
   function refresh() {
-    setRooms(getRooms())
+    loadRooms()
   }
 
   function startNew() {
@@ -63,34 +74,41 @@ function RoomsManager() {
     setDraft({ ...draft, colors: { ...draft.colors, [key]: value } })
   }
 
-  function save() {
+  async function save() {
     if (!draft.name.trim()) {
       setError('Name is required.')
       return
     }
 
-    if (isNew) {
-      const id = slugify(draft.name)
-      if (!id) { setError('Name must contain letters or numbers.'); return }
-      if (getRooms().some(r => r.id === id)) {
-        setError('A room with this name already exists.')
-        return
+    try {
+      if (isNew) {
+        const id = slugify(draft.name)
+        if (!id) { setError('Name must contain letters or numbers.'); return }
+        if (rooms.some(r => r.id === id)) {
+          setError('A room with this name already exists.')
+          return
+        }
+        await roomsApi.create({ ...draft, id })
+      } else {
+        await roomsApi.update(draft.id, draft)
       }
-      createRoom({ ...draft, id })
-    } else {
-      updateRoom(draft.id, draft)
+      refresh()
+      cancel()
+    } catch (err) {
+      setError(err.message)
     }
-    refresh()
-    cancel()
   }
 
-  function remove(room) {
+  async function remove(room) {
     if (!window.confirm(`Delete "${room.name}"? This cannot be undone.`)) return
-    deleteRoom(room.id)
-    refresh()
-    cancel()
+    try {
+      await roomsApi.remove(room.id)
+      refresh()
+      cancel()
+    } catch (err) {
+      setError(err.message)
+    }
   }
-
   // ── EDIT / CREATE FORM ───────────────────────────────────────
   if (draft) {
     return (

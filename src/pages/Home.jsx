@@ -1,13 +1,24 @@
 import { useNavigate } from 'react-router-dom'
-import { useRef } from 'react'
-import { getRooms, getUniverseProducts } from '../data/store.js'
+import { useRef, useState, useEffect } from 'react'
+import { roomsApi, productsApi } from '../api/client.js'
 import './Home.css'
 
 function Home() {
   const navigate = useNavigate()
   const universeRef = useRef(null)
-  const rooms = getRooms()
-  const universeProducts = getUniverseProducts()
+  const [rooms, setRooms] = useState([])
+  const [universeProducts, setUniverseProducts] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    Promise.all([roomsApi.getAll(), productsApi.getUniverse()])
+      .then(([roomsData, productsData]) => {
+        setRooms(roomsData)
+        setUniverseProducts(productsData)
+      })
+      .catch(err => console.error('Failed to load:', err))
+      .finally(() => setLoading(false))
+  }, [])
 
   function scrollDown() {
     universeRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -44,7 +55,8 @@ function Home() {
           </div>
 
           <div className="product-grid">
-            {universeProducts.map(product => (
+            {loading && <p className="section-desc">Loading...</p>}
+            {!loading && universeProducts.map(product => (
               <div
                 key={product.id}
                 className="product-card"
