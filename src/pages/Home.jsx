@@ -28,17 +28,38 @@ function Home() {
     <div className="home">
 
       {/* ── HERO ─────────────────────────────────────────────── */}
-      <section className="home__hero">
-        <div className="home__noise" />
-        <div className="home__hero-content">
-          <p className="home__eyebrow">Collection 01</p>
-          <h1 className="home__title">ERRO</h1>
-          <p className="home__sub">Not a store. A universe.</p>
-          <button className="home__enter" onClick={scrollDown}>
+      <section className="hero">
+        <div className="hero__fog" />
+
+        {/* The stage: doorway + figure */}
+        <div className="hero__stage">
+          <div className="hero__door">
+            <div className="hero__door-inner" />
+            <div className="hero__figure" />
+            <div className="hero__eye" />
+          </div>
+        </div>
+
+        {/* The floating mark */}
+        <div className="hero__mark">
+          <img src="/logo.png" alt="" className="hero__mark-img" />
+        </div>
+
+        {/* Content */}
+        <div className="hero__content">
+          <h1 className="hero__title" aria-label="ERRO">
+            <span className="hero__letter hero__letter--1" data-char="E">E</span>
+            <span className="hero__letter hero__letter--2" data-char="R">R</span>
+            <span className="hero__letter hero__letter--3" data-char="R">R</span>
+            <span className="hero__letter hero__letter--4" data-char="O">O</span>
+          </h1>
+          <p className="hero__sub">Not a store. A universe.</p>
+          <button className="hero__enter" onClick={scrollDown}>
             Enter the Universe
           </button>
         </div>
-        <p className="home__footer">
+
+        <p className="hero__footer">
           Morocco — Cash on Delivery — Limited Drops
         </p>
       </section>

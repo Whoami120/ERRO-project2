@@ -8,7 +8,10 @@ function Navbar() {
   return (
     <nav className="navbar">
       <div className="navbar__inner">
-        <Link to="/" className="navbar__logo">ERRO</Link>
+        <Link to="/" className="navbar__logo">
+          <img src="/logo.png" alt="" className="navbar__logo-img" />
+          <span className="navbar__logo-text">ERRO</span>
+        </Link>
 
         <button className="navbar__cart" onClick={openCart}>
           Cart
