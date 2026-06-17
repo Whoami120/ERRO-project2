@@ -1,5 +1,9 @@
 // ─── ROOMS STORE — localStorage (temporary until backend) ───────
-import { rooms as seedRooms } from './universe.js'
+import {
+  rooms as seedRooms,
+  products as seedRoomProducts,
+  universeProducts as seedUniverseProducts,
+} from './universe.js'
 
 const ROOMS_KEY = 'erro_rooms'
 
@@ -50,4 +54,64 @@ export function deleteRoom(id) {
 export function resetRooms() {
   localStorage.removeItem(ROOMS_KEY)
   return getRooms()
+}
+
+// ─── PRODUCTS STORE ─────────────────────────────────────────────
+const PRODUCTS_KEY = 'erro_products'
+
+export function getProducts() {
+  try {
+    const raw = localStorage.getItem(PRODUCTS_KEY)
+    if (raw) return JSON.parse(raw)
+  } catch {
+    // ignore and re-seed
+  }
+  // First load — seed from static products (room products + universe products)
+  const seeded = [...seedRoomProducts, ...seedUniverseProducts]
+  localStorage.setItem(PRODUCTS_KEY, JSON.stringify(seeded))
+  return seeded
+}
+
+export function saveProducts(products) {
+  localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products))
+}
+
+export function getProductById(id) {
+  return getProducts().find(p => p.id === id) || null
+}
+
+export function getProductsByRoom(roomId) {
+  return getProducts().filter(p => p.roomId === roomId)
+}
+
+export function getUniverseProducts() {
+  return getProducts().filter(p => p.roomId === null || p.roomId === undefined)
+}
+
+export function createProduct(product) {
+  const products = getProducts()
+  const newProduct = {
+    ...product,
+    id: product.id || 'p-' + Date.now().toString().slice(-6),
+  }
+  products.push(newProduct)
+  saveProducts(products)
+  return newProduct
+}
+
+export function updateProduct(id, updates) {
+  const products = getProducts().map(p =>
+    p.id === id ? { ...p, ...updates } : p
+  )
+  saveProducts(products)
+}
+
+export function deleteProduct(id) {
+  const products = getProducts().filter(p => p.id !== id)
+  saveProducts(products)
+}
+
+export function resetProducts() {
+  localStorage.removeItem(PRODUCTS_KEY)
+  return getProducts()
 }

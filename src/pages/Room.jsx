@@ -1,7 +1,6 @@
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useEffect } from 'react'
-import { getProductsByRoom } from '../data/universe.js'
-import { getRoomById } from '../data/store.js'
+import { getRoomById, getProductsByRoom } from '../data/store.js'
 import './Room.css'
 
 function Room() {

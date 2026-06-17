@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import OrdersView from '../components/admin/OrdersView.jsx'
+import RoomsManager from '../components/admin/RoomsManager.jsx'
+import ProductsManager from '../components/admin/ProductsManager.jsx'
 import './Admin.css'
 
 // Temporary front-end gate only. Real auth comes with the backend.
@@ -87,18 +89,8 @@ function Admin() {
 
       <main className="admin__main">
         {tab === 'orders' && <OrdersView />}
-        {tab === 'rooms' && (
-          <div className="admin__placeholder">
-            <h2>Rooms</h2>
-            <p>Rooms manager comes in step 9C.</p>
-          </div>
-        )}
-        {tab === 'products' && (
-          <div className="admin__placeholder">
-            <h2>Products</h2>
-            <p>Products manager comes in step 9D.</p>
-          </div>
-        )}
+        {tab === 'rooms' && <RoomsManager />}
+        {tab === 'products' && <ProductsManager />}
       </main>
     </div>
   )

@@ -1,13 +1,13 @@
 import { useNavigate } from 'react-router-dom'
 import { useRef } from 'react'
-import { universeProducts } from '../data/universe.js'
-import { getRooms } from '../data/store.js'
+import { getRooms, getUniverseProducts } from '../data/store.js'
 import './Home.css'
 
 function Home() {
   const navigate = useNavigate()
   const universeRef = useRef(null)
   const rooms = getRooms()
+  const universeProducts = getUniverseProducts()
 
   function scrollDown() {
     universeRef.current?.scrollIntoView({ behavior: 'smooth' })

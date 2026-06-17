@@ -1,7 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import { getProductById } from '../data/universe.js'
-import { getRoomById } from '../data/store.js'
+import { getRoomById, getProductById } from '../data/store.js'
 import { useCart } from '../context/CartContext.jsx'
 import './Product.css'
 function Product() {
