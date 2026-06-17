@@ -66,6 +66,7 @@ function Home() {
 
       {/* ── UNIVERSE PRODUCTS ────────────────────────────────── */}
       <section className="home__universe" ref={universeRef}>
+        <span className="shooting-star"></span>
         <div className="container">
           <div className="section-header">
             <p className="section-eyebrow">The Universe</p>
@@ -100,6 +101,7 @@ function Home() {
 
       {/* ── ROOMS MAP ────────────────────────────────────────── */}
       <section className="home__rooms">
+        <span className="shooting-star shooting-star--2"></span>
         <div className="container">
           <div className="section-header">
             <p className="section-eyebrow">The Drops</p>
